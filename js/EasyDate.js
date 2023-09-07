@@ -1,0 +1,264 @@
+/*
+ * @Author: gaiwa gaiwa@163.com
+ * @Date: 2023-09-05 22:29:17
+ * @LastEditors: gaiwa gaiwa@163.com
+ * @LastEditTime: 2023-09-06 16:25:54
+ * @FilePath: \date-picker\js\EasyDate.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+(function (win) {
+  const DEFAULT_FORMAT = 'yyyy-MM-dd';
+  const UNIT_TYPE = {
+    'm': 'Month',
+    'd': 'Date',
+    'y': 'FullYear'
+  }
+  /*
+    *@class: EasyDate
+    *@classdes: 时间日历主对象
+    *@params: {number} offset 初始日期偏移量/日期
+    *@params: {Object} option 扩展的定制化功能
+    *@desc: 通过EasyDate 模拟接口  进行对月份调取/日期格式化等增值API
+  */
+  class EasyDate{
+    constructor(offset, options){
+      let date = EasyDate.isDate(offset);
+      if (date) {
+        this.base = new Date();
+      }
+
+      if (offset instanceof Date) {
+        this.base = new Date(offset);
+      }
+      this.format = options?.format || DEFAULT_FORMAT;
+    }
+    /*
+      *@func: resetTime重置日期格式
+      *@for: 重置日期对象的时间为 0时0分0秒0毫秒
+      *@desc: 防止后续日期对象比较运算 或者 +- 运算出现bug
+    */
+    resetTime(){
+      this.base.getHours(0);
+      this.base.getMinutes(0);
+      this.base.getSeconds(0);
+      this.base.getMilliseconds(0);
+    }
+    /*
+      *@func: setDate
+      *@description: 设置日期
+      *@param: {Object} date
+    */
+    setDate(date){
+      this.base.setDate(date);
+    }
+    /*
+      *@func: getDate
+      *@description: 返回当前日期对象
+      *@param: {Object} date
+      *@return: {Object} 返回当前日期对象
+    */
+    getDate(date){
+      return this.base;
+    }
+    /*
+     *@func: transDate
+     *@description: 获取当前日期并自动计算偏移后的日期
+     *@param: {String} offset
+    */
+    transDate(offset) {
+      offset = EasyDate.parse(offset);
+      if (!offset) {
+        return false;
+      }
+      for (let key in offset) {
+        if (offset.hasOwnProperty(key)) {
+          let type = UNIT_TYPE[key];
+          this.base[`set${type}`](this.base[`get${type}`]()+offset[key]);
+        }
+      }
+    }
+    /*
+     *@func: parset
+     *@description: 日期偏移格式整理
+     *@param: {String} offset 偏移量 例如: "+1m" 表示下一个月
+    */
+    static parse(offset) {
+      if (!offset) {
+        return false;
+      }
+      offset = offset.toLowerCase();
+      let result = {};
+      offset.replace(/([+-]?\d+)([ymd])/g, (m, number, unit) => {
+        result[unit] = Number(number);
+      });
+      return result;
+    }
+    /*
+      *@static: padLeft 十位补0 日期格式化工具方法
+      *@param: {Number} num 需要补零的数字
+      *@return: {String} 补零后日期字符串
+    */
+    static padLeft(num) {
+      return String(num)[1] && String(num) || '0' + num;
+    }
+    /*
+      *@func: format
+      *@description: (date, 'yyyy-MM-dd') => "2020-08-10"
+      *@param: {Object} date 日期对象
+      *@param: {String} format 模板字符串
+      *@RegExp: 
+      *@return: {String} 格式化后日期字符串
+    */
+    static format(date = this.base, format = DEFAULT_FORMAT) {
+      let regMap = {
+        'y': date.getFullYear(),
+        'm': EasyDate.padLeft(date.getMonth() + 1),
+        'd': EasyDate.padLeft(date.getDate())
+      }
+      return Object.entries(regMap).reduce((acc,[reg,value])=>{
+        return acc.replace(new RegExp(`${reg}+`,'gi'),value);
+      },format);
+    }
+    /*
+      *@func: isDate
+      *@description: 判断日期对象是否满足对应格式
+      *@param: {String} dateStr 日期字符串
+      *@param: {String} format 模板字符串
+      *@return: {String} 返回yyyy-mm-dd格式的日期字符串
+    */
+    static isDate(dateStr, format = DEFAULT_FORMAT){
+      if(!dateStr) {
+        return EasyDate.format(new Date(), format);
+      }
+      if (dateStr instanceof EasyDate || dateStr instanceof Date){
+        return dateStr;
+      }
+      let pos = [];
+      let regExps = [/d+/gi,/m+/gi,/y+/gi];
+      let reg = "[-|/\\:,_]";
+      regExps.forEach(regExps => {
+        format = format.replace(regExps, match => {
+          return `(\\d{${match.length}})`;
+        });
+      });
+      format = format.replace(/-/gi,reg);
+      let regExp = new RegExp(`^${format}$`);
+      return dateStr.replace(new RegExp(reg,'gi'), '-').replace(/(\d{2,4})-(\d{1,2})-(\d{1,2})/g,function (item, $1, $2, $3){
+        return `${$1.length === 4 && $1 || ('20' + $1).substr(-4)}-${EasyDate.padLeft($2)}-${EasyDate.padLeft($3)}`;
+      });
+    }
+    /*
+      *@func: getDates
+      *@description: 生成当月所有日期的数据对象数组
+      *@param: {Object EasyDate} date 日期对象
+      *@param: {Object EasyDate} today 今天日期对象
+      *@param: {Object EasyDate} start 日期不可选范围起始
+      *@param: {Object EasyDate} end 日期不可选范围结束
+      *@return: {Array} 返回日期对象的所有日期的数据对象数组
+    */
+    static getDates(date, today, start = today, end, format = DEFAULT_FORMAT){
+      let month = date.getMonth();    // 获取日期
+      let dates = [];        
+      date = new Date(date);      // 拷贝一次日期对象
+      date.setDate(1);            // 设置日期为当月第一天
+      today = new EasyDate(today);
+      start = start && new EasyDate(start);
+      end = end && new EasyDate(end);
+      while(date.getMonth() === month){
+        let label = EasyDate.format(date,format);
+        dates.push({
+          date: label.substr(0,10),
+          today: today && today.toString() === label,
+          disabled: (start && label > start.toString()) && (end ? ( label < end.toString()): true),
+        });
+        date.setDate(date.getDate() + 1);
+      }
+      return dates;
+    }
+    /*
+      *@func: isGreateOrEqual
+      *@for: (选择|输入日期) 不能大于当前日期(今天))
+      *@param: {Object} date 日期对象
+      *@return: {Boolean} >=
+    */
+    isGreateOrEqual(date){
+      if(!date){
+        return false;
+      }
+      date = date instanceof EasyDate ? date: new EasyDate(date, {format: DEFAULT_FORMAT});
+      return this.toString() >= date.toString();
+    }
+    /*
+      *@func: toString
+      *@description: 格式化当前日期为字符串
+      *@return: {String} 当前日期对象字符串
+    */
+    toString(){
+      return EasyDate.format(this.base, this.format);
+    }
+    /*
+      *@func: toObject
+      *@description: 日历对象生成器
+      *@param: {Object Date} today
+      *@param: {Object Date} start
+      *@param: {Object Date} end
+      *@return: {Object} 当前月对象
+      *@author: Gaiwa
+    */
+    toObject(today, start, end){
+      // this.base 是元数据日期对象
+      const month = this.base.getMonth();
+      return {
+        year: String(this.base.getFullYear()),
+        month: EasyDate.padLeft(month + 1),
+        empty: this.getFirstDayOfThisMonth(),
+        days: EasyDate.getDates(this.base,today,start,end,this.format)
+      }
+    }
+    /*
+      *@method: getFirstDayOfThisMonth
+      *@description: 获取当月的第一个天
+      *@return: {Number} 第一天
+    */
+    getFirstDayOfThisMonth(){
+      let date = this.clone();
+      date.setDate(1);
+      return date.getDay();
+    }
+    /*
+      *@func: getDay
+      *@param: {type} param
+      *@return: {type} 返回值
+      *@author: Gaiwa
+    */
+    getDay(){
+      return this.base.getDay();
+    }
+    /*
+      *@method: clone
+      *@description: 克隆当前日期EasyDate对象
+      *@return: {Object} 日期对象
+    */
+    clone(){
+      return new EasyDate(this.base, {
+        format: this.format
+      });
+    }
+    /*
+      *@method: isLeapYear
+      *@description: 判断平年闰年
+      *@param: {Number} year 年
+      *@return: {Boolean} 是否为闰年
+    */
+    isLeapYear(year){
+      if(!year || year <= 1900){
+        return false;
+      }
+      if(year % 100 === 0){
+        return year % 400 ===0;
+      }
+      return year % 4;
+    }
+  }
+  win.EasyDate = EasyDate;
+})(window);

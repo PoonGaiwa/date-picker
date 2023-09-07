@@ -1,0 +1,52 @@
+<!--
+ * @Author: gaiwa gaiwa@163.com
+ * @Date: 2023-09-03 17:26:49
+ * @LastEditors: gaiwa gaiwa@163.com
+ * @LastEditTime: 2023-09-05 23:24:34
+ * @FilePath: \html\work\mobile\date-picker\date-picker.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="date,picker,stylus,exercise,template">
+  <meta name="description" content="这是一个日期选择器组件练习">
+  <link rel="stylesheet" href="./css/date-picker.css">
+  <title>Date-picker</title>
+</head>
+<body>
+  <div>
+    <span>日</span>
+    <span>一</span>
+    <span>二</span>
+    <span>三</span>
+    <span>四</span>
+    <span>五</span>
+    <span>六</span>
+  </div>
+
+  <ul></ul>
+  <script type="text/template" id="EasyDate">
+    <li class="empty-{{empty}}"></li>
+    {{each days}}
+      <li class="{{if $value.disabled}}disabled {{/if}}{{if $value.today}}today {{/if}}{{if $value.selected}}selected{{/if}}" data-index="{{$index}}" data-date="{{$value.date}}"></li>
+    {{/each}}
+  </script>
+  <script src="./js/template-web.js"></script>
+  <script>
+    let arr = new Array(31);
+    arr = arr.fill(0).map((item,idx) => {
+      return {
+        disabled: idx > 4,
+        today:  idx === 4,
+        selected: idx === 3,
+        date: idx + 1
+      }
+    });
+    document.querySelector('ul').innerHTML = template('EasyDate',{days: arr, empty: 4});
+  </script>
+</body>
+</html>

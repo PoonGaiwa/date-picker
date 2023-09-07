@@ -1,0 +1,68 @@
+<!--
+ * @Author: gaiwa gaiwa@163.com
+ * @Date: 2023-09-03 17:26:49
+ * @LastEditors: gaiwa gaiwa@163.com
+ * @LastEditTime: 2023-09-07 00:34:25
+ * @FilePath: \html\work\mobile\date-picker\date-picker.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="date,picker,stylus,exercise,template">
+  <meta name="description" content="这是一个日期选择器组件练习">
+  <link rel="stylesheet" href="./css/date-picker.css">
+  <link rel="stylesheet" href="./css/normalize.css">
+  <link rel="stylesheet" href="./css/colors.min.css">
+  <title>日历组件Date-picker</title>
+</head>
+<body>
+  <div class="date-picker-wrap"></div>
+  <input type="text" id="date-input">
+
+  <script type="text/template" id="picker">
+    <div class="date-picker">
+      <header class="dp-header">
+        <ul class="dp-labels">
+          <li class="sunday">日</li>
+          <li>一</li>
+          <li>二</li>
+          <li>三</li>
+          <li>四</li>
+          <li>五</li>
+          <li class="saturday">六</li>
+        </ul>
+      </header>
+      <div class="dp-container">
+      </div>
+    </div>
+  </script>
+  <script type="text/template" id="calendar">
+    <div class="dp-calendar-item" data-date="{{year}}-{{month}}">
+      <header>
+        <h4>{{year}}年{{month}}月</h4>
+      </header>
+      <ul>      
+        <li class="empty-{{empty}} empty"></li>
+          {{each days}}
+            <li class="{{if $value.disabled}}disabled {{/if}}{{if $value.today}}today {{/if}}{{if $value.selected}}selected{{/if}}" data-index="{{$index}}" data-date="{{$value.date}}"></li>
+          {{/each}}
+      </ul>
+    </div>
+  </script>
+
+  <script src="./js/zepto.min.js"></script>
+  <script src="./js/template-web.js"></script>
+  <script src="./js/pull-down.js"></script>
+  <script src="./js/EasyDate.js"></script>
+  <script src="./js/date-picker.js"></script>
+  <script>
+    const $pickerWrap = $('.date-picker-wrap');
+    const $inputTarget = $('#date-input');
+    new DatePicker('#date-input','.date-picker-wrap')
+  </script>
+</body>
+</html>

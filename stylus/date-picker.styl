@@ -1,0 +1,137 @@
+root-font-size = 16px;
+gray-color = #ececec;
+
+*
+  margin: 0;
+  padding: 0;
+  user-select: none;
+
+html, body
+  overflow: hidden;
+  height: 100%;
+
+body
+  background-color gray;
+
+ul
+  list-style: none;
+
+#app
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+
+.date-picker-wrap
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+  transform: translateX(100vw) translateZ(0)
+  transition: .5s
+  &.show
+    transform: translateX(0vw) translateZ(0)
+
+.date-picker
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  padding: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  color:#222;
+  font-size: root-font-size;
+
+.dp-header
+  .dp-labels
+    display: flex;
+    justify-content: space-around;
+    margin: 0
+    background-color: gray-color;
+    li
+      color: #999;
+      font-size: 14px;
+      text-align: center;
+      line-height: 35px;
+      &.sunday, &.saturday
+        color: #FF851B;
+
+.dp-container
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+
+.dp-calendar-item
+  header
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    padding-top: .8rem;
+    align-items: center;
+    &::after,
+    &::before
+      content: '';
+      width: 60px;
+      height: 1px;
+      transform: scaleY(.5);
+      background-color: #999;
+    h4
+      padding: 0 .4rem;
+      color: #333;
+      font-weight: normal;
+      text-align: center;
+      font-size: 18px;
+      line-height: 3.25;
+      letter-spacing: 0
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    list-style: none;
+    counter-reset: date;
+  }
+
+  li
+    flex: 1 1 14.2857%;
+    min-width: 14.2857%;
+    max-width: 14.2857%;
+    height: 14.2857vw;
+    margin-bottom: 1rem;
+    text-align: center;
+    line-height: 14.2857vw;
+
+  li:not(:first-child)::before
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: counter(date);
+    counter-increment: date;
+    color: #333;
+
+  for n in (0..6)
+    $saturday =  8 - n;
+    $sunday = 9 - n;
+    li.empty-{n}
+      flex: n n 14.2857% * n;
+      min-width: 14.2857% * n;
+      max-width: 100%;
+      ~ :nth-child(7n + {$saturday})::before,
+      ~ :nth-child(7n + {$sunday})::before
+        color: #FF851B;
+
+  li.today::before
+    content: '今天' !important;
+  li.disabled::before
+    color: #ccc !important;
+  li.selected::before
+    border-radius: 50%;
+    background-color rgba(92, 144, 22, .36);
+
+
+

@@ -1,0 +1,193 @@
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+}
+body {
+  background-color: #808080;
+}
+ul {
+  list-style: none;
+}
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+}
+.date-picker-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+  transform: translateX(100vw) translateZ(0);
+  transition: 0.5s;
+}
+.date-picker-wrap.show {
+  transform: translateX(0vw) translateZ(0);
+}
+.date-picker {
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  padding: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  color: #222;
+  font-size: 16px;
+}
+.dp-header .dp-labels {
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  background-color: #ececec;
+}
+.dp-header .dp-labels li {
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+  line-height: 35px;
+}
+.dp-header .dp-labels li.sunday,
+.dp-header .dp-labels li.saturday {
+  color: #ff851b;
+}
+.dp-container {
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+.dp-calendar-item header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  padding-top: 0.8rem;
+  align-items: center;
+}
+.dp-calendar-item header::after,
+.dp-calendar-item header::before {
+  content: '';
+  width: 60px;
+  height: 1px;
+  transform: scaleY(0.5);
+  background-color: #999;
+}
+.dp-calendar-item header h4 {
+  padding: 0 0.4rem;
+  color: #333;
+  font-weight: normal;
+  text-align: center;
+  font-size: 18px;
+  line-height: 3.25;
+  letter-spacing: 0;
+}
+.dp-calendar-item ul {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  list-style: none;
+  counter-reset: date;
+}
+.dp-calendar-item li {
+  flex: 1 1 14.2857%;
+  min-width: 14.2857%;
+  max-width: 14.2857%;
+  height: 14.2857vw;
+  margin-bottom: 1rem;
+  text-align: center;
+  line-height: 14.2857vw;
+}
+.dp-calendar-item li:not(:first-child)::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: counter(date);
+  counter-increment: date;
+  color: #333;
+}
+.dp-calendar-item li.empty-0 {
+  flex: 0 0 0%;
+  min-width: 0%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-0 ~ :nth-child(7n + 8)::before,
+.dp-calendar-item li.empty-0 ~ :nth-child(7n + 9)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.empty-1 {
+  flex: 1 1 14.2857%;
+  min-width: 14.2857%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-1 ~ :nth-child(7n + 7)::before,
+.dp-calendar-item li.empty-1 ~ :nth-child(7n + 8)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.empty-2 {
+  flex: 2 2 28.5714%;
+  min-width: 28.5714%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-2 ~ :nth-child(7n + 6)::before,
+.dp-calendar-item li.empty-2 ~ :nth-child(7n + 7)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.empty-3 {
+  flex: 3 3 42.8571%;
+  min-width: 42.8571%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-3 ~ :nth-child(7n + 5)::before,
+.dp-calendar-item li.empty-3 ~ :nth-child(7n + 6)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.empty-4 {
+  flex: 4 4 57.1428%;
+  min-width: 57.1428%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-4 ~ :nth-child(7n + 4)::before,
+.dp-calendar-item li.empty-4 ~ :nth-child(7n + 5)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.empty-5 {
+  flex: 5 5 71.4285%;
+  min-width: 71.4285%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-5 ~ :nth-child(7n + 3)::before,
+.dp-calendar-item li.empty-5 ~ :nth-child(7n + 4)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.empty-6 {
+  flex: 6 6 85.7142%;
+  min-width: 85.7142%;
+  max-width: 100%;
+}
+.dp-calendar-item li.empty-6 ~ :nth-child(7n + 2)::before,
+.dp-calendar-item li.empty-6 ~ :nth-child(7n + 3)::before {
+  color: #ff851b;
+}
+.dp-calendar-item li.today::before {
+  content: '今天' !important;
+}
+.dp-calendar-item li.disabled::before {
+  color: #ccc !important;
+}
+.dp-calendar-item li.selected::before {
+  border-radius: 50%;
+  background-color: rgba(92,144,22,0.36);
+}
